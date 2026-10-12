@@ -1,0 +1,15 @@
+<%
+// Expects: `rating` (number or null), optional `count` (number)
+const r = Math.round(rating || 0);
+%>
+<% if (rating) { %>
+  <div class="rating-summary">
+    <span class="stars-display">
+      <% for (let i = 1; i <= 5; i++) { %><%= i <= r ? '★' : '☆' %><% } %>
+    </span>
+    <span class="score"><%= rating.toFixed(1) %></span>
+    <% if (typeof count !== 'undefined') { %><span class="count">(<%= count %> review<%= count === 1 ? '' : 's' %>)</span><% } %>
+  </div>
+<% } else { %>
+  <div class="no-rating">No reviews yet</div>
+<% } %>

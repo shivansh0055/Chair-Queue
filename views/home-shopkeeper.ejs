@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Chair&Queue</title>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <div class="hero" style="padding: 60px 0 70px;">
+    <div class="container">
+      <h1 style="font-size: clamp(2rem, 4vw, 2.8rem);">Welcome back, <%= currentUser.name %></h1>
+      <p>Here's a quick look at your saloons and bookings.</p>
+
+      <div class="role-picker" style="margin-top: 40px;">
+        <div class="role-card">
+          <h3><%= shopCount %> shop<%= shopCount === 1 ? '' : 's' %> listed</h3>
+          <p><%= upcomingBookingsCount %> upcoming booking<%= upcomingBookingsCount === 1 ? '' : 's' %> across all your shops.</p>
+          <div class="btn-row">
+            <a href="/shopkeeper/dashboard" class="btn btn-primary btn-sm">My shops</a>
+            <a href="/shopkeeper/shops/new" class="btn btn-outline btn-sm">Add a shop</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section">
+    <% if (shopCount === 0) { %>
+      <div class="empty-state">
+        <h3>List your first saloon</h3>
+        <p>Add a photo, pin your location, and open time slots to start taking bookings.</p>
+        <a href="/shopkeeper/shops/new" class="btn btn-primary" style="margin-top:14px;">List a new shop</a>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <h3>Manage your saloons</h3>
+        <p>Head to "My shops" to add time slots, see bookings, and read customer reviews.</p>
+        <a href="/shopkeeper/dashboard" class="btn btn-primary" style="margin-top:14px;">Go to My shops</a>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

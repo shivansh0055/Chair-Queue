@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Chair&Queue</title>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <div class="hero" style="padding: 60px 0 70px;">
+    <div class="container">
+      <h1 style="font-size: clamp(2rem, 4vw, 2.8rem);">Welcome back, <%= currentUser.name %></h1>
+      <p>Ready for your next chair? Browse saloons near you or check your upcoming booking below.</p>
+
+      <div class="role-picker" style="margin-top: 40px;">
+        <a href="/customer/dashboard" class="role-card" style="text-decoration:none; display:block;">
+          <h3>Browse shops</h3>
+          <p>See saloons near you on the map and book an open slot.</p>
+          <span class="btn btn-primary btn-sm">Browse now</span>
+        </a>
+        <a href="/customer/my-bookings" class="role-card" style="text-decoration:none; display:block;">
+          <h3>My bookings</h3>
+          <p><%= bookingCount %> booking<%= bookingCount === 1 ? '' : 's' %> total. Manage or cancel anytime.</p>
+          <span class="btn btn-outline btn-sm">View bookings</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section">
+    <% if (upcomingBooking && upcomingBooking.shop) { %>
+      <h2>Your next appointment</h2>
+      <div class="shop-card" style="max-width: 420px; display:flex; flex-direction:row; align-items:center; gap:16px; padding:14px;">
+        <img src="<%= upcomingBooking.shop.image.url %>" alt="<%= upcomingBooking.shop.name %>" style="width:90px; height:90px; object-fit:cover; border-radius:4px; flex-shrink:0;">
+        <div>
+          <h3 style="margin-bottom:4px;"><%= upcomingBooking.shop.name %></h3>
+          <div class="addr" style="margin-bottom:6px;"><%= upcomingBooking.shop.address %></div>
+          <div style="font-weight:600; color:var(--ember);"><%= upcomingBooking.date %> · <%= upcomingBooking.startTime %>–<%= upcomingBooking.endTime %></div>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <h3>No upcoming bookings</h3>
+        <p>You haven't booked anything yet — browse saloons near you and grab an open slot.</p>
+        <a href="/customer/dashboard" class="btn btn-primary" style="margin-top:14px;">Browse shops</a>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

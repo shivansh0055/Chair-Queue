@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>My shops — Chair&Queue</title>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container section">
+    <%- include('../partials/flash') %>
+
+    <div class="section-title">
+      <h2>Your saloons</h2>
+      <a href="/shopkeeper/shops/new" class="btn btn-primary">+ List a new shop</a>
+    </div>
+
+    <% if (shops.length === 0) { %>
+      <div class="empty-state">
+        <h3>No shops listed yet</h3>
+        <p>Add your first saloon with a photo and location to start taking bookings.</p>
+      </div>
+    <% } else { %>
+      <div class="shop-grid">
+        <% shops.forEach(shop => { %>
+          <a href="/shopkeeper/shops/<%= shop._id %>" class="shop-card">
+            <img src="<%= shop.image.url %>" alt="<%= shop.name %>">
+            <div class="shop-card-body">
+              <h3><%= shop.name %></h3>
+              <div class="addr"><%= shop.address %></div>
+              <span class="btn btn-dark btn-sm">Manage</span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

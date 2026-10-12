@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Sign up — Chair&Queue</title>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container">
+    <div class="form-card">
+      <div class="role-toggle">
+        <a href="/signup?role=customer" class="<%= role === 'customer' ? 'active' : '' %>">Customer</a>
+        <a href="/signup?role=shopkeeper" class="<%= role === 'shopkeeper' ? 'active' : '' %>">Shopkeeper</a>
+      </div>
+
+      <h2>Create your account</h2>
+      <p class="lead">
+        <% if (role === 'shopkeeper') { %>
+          List your saloon and start taking bookings.
+        <% } else { %>
+          Find saloons near you and book a slot.
+        <% } %>
+      </p>
+
+      <%- include('../partials/flash') %>
+
+      <form action="/signup" method="POST">
+        <input type="hidden" name="role" value="<%= role %>">
+        <div class="field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="field">
+          <label for="phone">Phone number</label>
+          <input type="tel" id="phone" name="phone">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Sign up as <%= role %></button>
+      </form>
+
+      <div class="form-footer">
+        Already have an account? <a href="/login" style="color: var(--ember); font-weight: 600;">Log in</a>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="brand">Chair<span>&amp;</span>Queue</a>
+    <div class="nav-links">
+      <% if (currentUser) { %>
+        <% if (currentUser.role === 'shopkeeper') { %>
+          <a href="/shopkeeper/dashboard">My shops</a>
+        <% } else { %>
+          <a href="/customer/dashboard">Browse shops</a>
+          <a href="/customer/my-bookings">My bookings</a>
+        <% } %>
+        <span>Hi, <%= currentUser.name %></span>
+        <form action="/logout" method="POST">
+          <button type="submit" class="linklike">Log out</button>
+        </form>
+      <% } else { %>
+        <a href="/login">Log in</a>
+        <a href="/signup?role=customer" class="btn btn-primary btn-sm">Sign up</a>
+      <% } %>
+    </div>
+  </div>
+</nav>

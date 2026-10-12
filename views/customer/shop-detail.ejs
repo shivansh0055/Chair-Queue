@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= shop.name %> — Chair&Queue</title>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container section">
+    <%- include('../partials/flash') %>
+
+    <h2><%= shop.name %></h2>
+    <img src="<%= shop.image.url %>" alt="<%= shop.name %>" class="shop-hero-img">
+    <p class="shop-meta"><%= shop.address %> · Owned by <%= shop.owner.name %></p>
+    <%- include('../partials/stars', { rating: avgRating, count: reviews.length }) %>
+    <% if (shop.description) { %><p><%= shop.description %></p><% } %>
+
+    <div id="map"></div>
+
+    <h3 style="margin-top:12px;">Available slots</h3>
+
+    <%
+      // group slots by date
+      const grouped = {};
+      slots.forEach(s => {
+        if (!grouped[s.date]) grouped[s.date] = [];
+        grouped[s.date].push(s);
+      });
+      const dates = Object.keys(grouped).sort();
+    %>
+
+    <% if (dates.length === 0) { %>
+      <div class="empty-state">
+        <h3>No slots available</h3>
+        <p>This shop hasn't opened any time slots yet. Check back later.</p>
+      </div>
+    <% } else { %>
+      <% dates.forEach(date => { %>
+        <div class="slot-day-group">
+          <h4><%= date %></h4>
+          <div class="slot-grid">
+            <% grouped[date].forEach(slot => { %>
+              <% const isMine = slot.isBooked && slot.bookedBy && String(slot.bookedBy) === String(currentUser.id); %>
+              <div class="slot <%= slot.isBooked ? (isMine ? 'mine' : 'booked') : 'vacant' %>">
+                <span class="time"><%= slot.startTime %>–<%= slot.endTime %></span>
+                <% if (slot.isBooked) { %>
+                  <span class="status-tag"><%= isMine ? 'YOUR BOOKING' : 'BOOKED' %></span>
+                <% } else { %>
+                  <form action="/customer/shops/<%= shop._id %>/slots/<%= slot._id %>/book" method="POST">
+                    <button type="submit" class="btn btn-primary btn-sm btn-block">Book</button>
+                  </form>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+
+    <h3 style="margin-top:40px;">Reviews</h3>
+
+    <div class="review-form-card">
+      <h4 style="margin-bottom:12px;"><%= myReview ? 'Update your review' : 'Leave a review' %></h4>
+      <form action="/customer/shops/<%= shop._id %>/reviews" method="POST">
+        <div class="field">
+          <label>Your rating</label>
+          <div class="star-picker">
+            <% for (let i = 5; i >= 1; i--) { %>
+              <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>" <%= myReview && myReview.rating === i ? 'checked' : '' %> required>
+              <label for="star<%= i %>">★</label>
+            <% } %>
+          </div>
+        </div>
+        <div class="field">
+          <label for="comment">Comment (optional)</label>
+          <textarea id="comment" name="comment" rows="3" maxlength="500" placeholder="How was your experience?"><%= myReview ? myReview.comment : '' %></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary"><%= myReview ? 'Update review' : 'Submit review' %></button>
+      </form>
+    </div>
+
+    <% if (reviews.length === 0) { %>
+      <div class="empty-state">
+        <h3>No reviews yet</h3>
+        <p>Be the first to share your experience at this saloon.</p>
+      </div>
+    <% } else { %>
+      <div class="review-grid">
+        <% reviews.forEach(review => { %>
+          <div class="review-card">
+            <div class="review-head">
+              <span class="reviewer"><%= review.customer.name %></span>
+              <span class="review-date"><%= new Date(review.createdAt).toLocaleDateString() %></span>
+            </div>
+            <span class="stars-display">
+              <% for (let i = 1; i <= 5; i++) { %><%= i <= review.rating ? '★' : '☆' %><% } %>
+            </span>
+            <% if (review.comment) { %><div class="review-comment"><%= review.comment %></div><% } %>
+            <% if (String(review.customer._id) === String(currentUser.id)) { %>
+              <form action="/customer/shops/<%= shop._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete your review?');">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+  <script>
+    mapboxgl.accessToken = "<%= mapboxToken %>";
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [<%= shop.location.coordinates[0] %>, <%= shop.location.coordinates[1] %>],
+      zoom: 14
+    });
+    new mapboxgl.Marker({ color: '#c9622a' })
+      .setLngLat([<%= shop.location.coordinates[0] %>, <%= shop.location.coordinates[1] %>])
+      .addTo(map);
+  </script>
+</body>
+</html>

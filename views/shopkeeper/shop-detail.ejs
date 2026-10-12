@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= shop.name %> — Chair&Queue</title>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container section">
+    <%- include('../partials/flash') %>
+
+    <div class="section-title">
+      <h2><%= shop.name %></h2>
+      <div class="btn-row" style="display:flex; gap:10px;">
+        <a href="/shopkeeper/shops/<%= shop._id %>/edit" class="btn btn-outline btn-sm" style="border-color:#ccc; color:var(--charcoal);">Edit shop</a>
+        <form action="/shopkeeper/shops/<%= shop._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this shop and all its slots?');">
+          <button type="submit" class="btn btn-danger btn-sm">Delete shop</button>
+        </form>
+      </div>
+    </div>
+
+    <img src="<%= shop.image.url %>" alt="<%= shop.name %>" class="shop-hero-img">
+    <p class="shop-meta"><%= shop.address %></p>
+    <%- include('../partials/stars', { rating: avgRating, count: reviews.length }) %>
+    <% if (shop.description) { %><p><%= shop.description %></p><% } %>
+
+    <h3 style="margin-top:36px;">Add a time slot</h3>
+    <form action="/shopkeeper/shops/<%= shop._id %>/slots" method="POST" class="field-row" style="align-items:flex-end; margin-bottom:32px;">
+      <div class="field">
+        <label for="date">Date</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+      <div class="field">
+        <label for="startTime">Start time</label>
+        <input type="time" id="startTime" name="startTime" required>
+      </div>
+      <div class="field">
+        <label for="endTime">End time</label>
+        <input type="time" id="endTime" name="endTime" required>
+      </div>
+      <div class="field" style="flex: 0 0 auto;">
+        <button type="submit" class="btn btn-primary">Add slot</button>
+      </div>
+    </form>
+
+    <h3>All slots</h3>
+    <% if (slots.length === 0) { %>
+      <div class="empty-state">
+        <h3>No slots yet</h3>
+        <p>Add time slots above so customers can book them.</p>
+      </div>
+    <% } else { %>
+      <div class="slot-manage-list">
+        <% slots.forEach(slot => { %>
+          <div class="slot-manage-row <%= slot.isBooked ? 'booked' : 'vacant' %>">
+            <div class="info">
+              <div class="date"><%= slot.date %> · <%= slot.startTime %>–<%= slot.endTime %></div>
+              <% if (slot.isBooked) { %>
+                <div class="who">Booked by <%= slot.bookedBy ? slot.bookedBy.name : 'a customer' %><% if (slot.bookedBy && slot.bookedBy.phone) { %> · <%= slot.bookedBy.phone %><% } %></div>
+              <% } else { %>
+                <div class="who">Vacant</div>
+              <% } %>
+            </div>
+            <% if (!slot.isBooked) { %>
+              <form action="/shopkeeper/shops/<%= shop._id %>/slots/<%= slot._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Remove this slot?');">
+                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+              </form>
+            <% } else { %>
+              <span class="status-tag" style="background:var(--red-booked); color:white; padding:4px 10px; border-radius:10px; font-size:0.75rem; font-weight:700;">BOOKED</span>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <h3 style="margin-top:40px;">Customer reviews</h3>
+    <% if (reviews.length === 0) { %>
+      <div class="empty-state">
+        <h3>No reviews yet</h3>
+        <p>Reviews from customers will show up here once they leave one.</p>
+      </div>
+    <% } else { %>
+      <div class="review-grid">
+        <% reviews.forEach(review => { %>
+          <div class="review-card">
+            <div class="review-head">
+              <span class="reviewer"><%= review.customer.name %></span>
+              <span class="review-date"><%= new Date(review.createdAt).toLocaleDateString() %></span>
+            </div>
+            <span class="stars-display">
+              <% for (let i = 1; i <= 5; i++) { %><%= i <= review.rating ? '★' : '☆' %><% } %>
+            </span>
+            <% if (review.comment) { %><div class="review-comment"><%= review.comment %></div><% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

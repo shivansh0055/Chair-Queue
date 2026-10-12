@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Log in — Chair&Queue</title>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container">
+    <div class="form-card">
+      <h2>Welcome back</h2>
+      <p class="lead">Log in to manage your bookings or your saloon.</p>
+
+      <%- include('../partials/flash') %>
+
+      <form action="/login" method="POST">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+      </form>
+
+      <div class="form-footer">
+        New here?
+        <a href="/signup?role=customer" style="color: var(--ember); font-weight: 600;">Sign up as customer</a>
+        or
+        <a href="/signup?role=shopkeeper" style="color: var(--ember); font-weight: 600;">as shopkeeper</a>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

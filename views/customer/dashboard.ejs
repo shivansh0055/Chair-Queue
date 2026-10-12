@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Browse saloons — Chair&Queue</title>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container section">
+    <%- include('../partials/flash') %>
+
+    <div class="section-title">
+      <h2>Saloons near you</h2>
+      <p class="subtle"><%= shops.length %> shop<%= shops.length === 1 ? '' : 's' %> listed</p>
+    </div>
+
+    <div class="form-check form-switch form-switch-lg" style="margin-bottom: 20px;">
+      <input class="form-check-input" type="checkbox" role="switch" id="nearMeSwitch" <%= usedLocation ? 'checked' : '' %>>
+      <label class="form-check-label" for="nearMeSwitch">
+        <h4>Show Shops Near Me</h4>
+      </label>
+    </div>
+    <div id="locationStatus" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; display: none;"></div>
+
+    <div id="map" style="margin-bottom:32px;"></div>
+
+    <% if (shops.length === 0) { %>
+      <div class="empty-state">
+        <h3>No shops listed yet</h3>
+        <p>Check back soon — new saloons are added regularly.</p>
+      </div>
+    <% } else { %>
+      <div class="shop-grid">
+        <% shops.forEach(shop => { %>
+          <a href="/customer/shops/<%= shop._id %>" class="shop-card">
+            <img src="<%= shop.image.url %>" alt="<%= shop.name %>">
+            <div class="shop-card-body">
+              <h3><%= shop.name %></h3>
+              <div class="addr"><%= shop.address %></div>
+              <%- include('../partials/stars', { rating: shop.avgRating, count: shop.reviewCount }) %>
+              <span class="btn btn-dark btn-sm" style="margin-top:10px; display:inline-block;">View &amp; book</span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    const nearMeSwitch = document.getElementById('nearMeSwitch');
+    const locationStatus = document.getElementById('locationStatus');
+
+    nearMeSwitch.addEventListener('change', () => {
+      if (nearMeSwitch.checked) {
+        if (!navigator.geolocation) {
+          locationStatus.style.display = 'block';
+          locationStatus.textContent = "Your browser doesn't support location access.";
+          nearMeSwitch.checked = false;
+          return;
+        }
+
+        locationStatus.style.display = 'block';
+        locationStatus.textContent = 'Getting your location...';
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            window.location.href = `/customer/dashboard?lat=${latitude}&lng=${longitude}`;
+          },
+          (error) => {
+            locationStatus.textContent = 'Could not get your location. Please allow location access and try again.';
+            nearMeSwitch.checked = false;
+          }
+        );
+      } else {
+        window.location.href = '/customer/dashboard';
+      }
+    });
+  </script>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+  <script>
+    mapboxgl.accessToken = "<%= mapboxToken %>";
+    const shops = <%- JSON.stringify(shops.map(s => ({
+      name: s.name,
+      id: s._id,
+      lng: s.location.coordinates[0],
+      lat: s.location.coordinates[1]
+    }))) %>;
+
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: shops.length ? [shops[0].lng, shops[0].lat] : [77.2090, 28.6139],
+      zoom: shops.length ? 11 : 3
+    });
+
+    shops.forEach(shop => {
+      const popup = new mapboxgl.Popup({ offset: 24 }).setHTML(
+        `<strong>${shop.name}</strong><br><a href="/customer/shops/${shop.id}">View &amp; book</a>`
+      );
+      new mapboxgl.Marker({ color: '#c9622a' })
+        .setLngLat([shop.lng, shop.lat])
+        .setPopup(popup)
+        .addTo(map);
+    });
+  </script>
+</body>
+</html>

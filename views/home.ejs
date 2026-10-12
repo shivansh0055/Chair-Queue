@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Chair&Queue — Book your saloon slot</title>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <div class="hero">
+    <div class="container">
+      <h1>Skip the wait. Book your chair.</h1>
+      <p>Chair&amp;Queue connects saloon owners with customers — list your shop with a photo and map pin, open real time slots, and let people book the exact seat they want.</p>
+      <div class="hero-actions">
+        <a href="/signup?role=customer" class="btn btn-primary">I'm a customer</a>
+        <a href="/signup?role=shopkeeper" class="btn btn-outline">I own a saloon</a>
+      </div>
+
+      <div class="role-picker">
+        <div class="role-card">
+          <h3>For customers</h3>
+          <p>Browse nearby saloons on the map, see which slots are open, and book instantly. No calls, no waiting around.</p>
+          <div class="btn-row">
+            <a href="/signup?role=customer" class="btn btn-primary btn-sm">Sign up</a>
+            <a href="/login" class="btn btn-outline btn-sm">Log in</a>
+          </div>
+        </div>
+        <div class="role-card">
+          <h3>For shopkeepers</h3>
+          <p>List your saloon with a photo and pin your location. Open custom time slots for each day and manage bookings as they come in.</p>
+          <div class="btn-row">
+            <a href="/signup?role=shopkeeper" class="btn btn-primary btn-sm">Sign up</a>
+            <a href="/login" class="btn btn-outline btn-sm">Log in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

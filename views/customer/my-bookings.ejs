@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>My bookings — Chair&Queue</title>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container section">
+    <%- include('../partials/flash') %>
+    <h2>My bookings</h2>
+
+    <% if (bookings.length === 0) { %>
+      <div class="empty-state">
+        <h3>No bookings yet</h3>
+        <p>Browse saloons and book a slot to see it here.</p>
+        <a href="/customer/dashboard" class="btn btn-primary" style="margin-top:14px;">Browse shops</a>
+      </div>
+    <% } else { %>
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>Shop</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% bookings.forEach(b => { %>
+            <tr>
+              <td><%= b.shop ? b.shop.name : 'Shop removed' %></td>
+              <td><%= b.date %></td>
+              <td><%= b.startTime %>–<%= b.endTime %></td>
+              <td>
+                <form action="/customer/my-bookings/<%= b._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Cancel this booking?');">
+                  <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>
